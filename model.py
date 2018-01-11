@@ -16,7 +16,7 @@ train_df, valid_df = train_test_split(df, test_size=0.2)
 number_of_epochs = 8
 batch_size = 64
 steps_per_epoch = math.ceil(len(train_df) * 3 / batch_size)
-validation_steps = math.ceil(len(valid_df) * 3 /batch_size)
+validation_steps = math.ceil(len(valid_df) * 3 / batch_size)
 learning_rate = 1e-3
 
 # import for model
@@ -83,6 +83,8 @@ print('time consume:{} min'.format((end - start)/60))
 
 print('model ver:{}'.format(model_ver))
 with open('tunning_records.md', 'a') as f:
-    f.write('# {}'.format(model_ver))
+    f.write('# {}\n'.format(model_ver))
+    f.write('- val_loss: {}\n'.format(hist.history['val_loss'][-1]))
+    f.write('- time consume:{} min {} epoches'.format((end - start)/60, number_of_epochs))
 # Visualize the training and validation loss of your neural network
 loss_plot(hist, model_ver)

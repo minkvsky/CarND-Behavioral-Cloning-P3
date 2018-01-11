@@ -1,8 +1,8 @@
-from sklearn.utils import shuffle
 import numpy as np
 import os
 import cv2
 import matplotlib.pyplot as plt
+from scipy.ndimage import rotate
 from scipy.stats import bernoulli
 
 DATA_PATH = 'data'
@@ -24,7 +24,7 @@ def loss_plot(hist, model_ver):
     plt.savefig('tuning_param/model_loss_{}.jpg'.format(model_ver))
 
 def generate_batch(df, batch_size=64):
-
+    from sklearn.utils import shuffle
     while 1:
         shuffle(df)
         for offset in range(0, len(df), batch_size):
@@ -58,9 +58,11 @@ def image_random_read(batch_df, i):
     return img, steering
 
 def image_random_process(img, steering):
-    # random fliplr, sheer, gamma
+    # random fliplr, sheer, rotation, gamma
     img, steering = random_fliplr(img, steering)
     img, steering = random_shear(img, steering)
+    # img, steering = random_rotate(img, steering)
+    img = random_gamma(img)
     return img, steering
 
 def random_fliplr(img, steering, flipping_prob=0.5):
@@ -68,6 +70,7 @@ def random_fliplr(img, steering, flipping_prob=0.5):
     Based on the outcome of an coin flip, the image will be flipped.
     If flipping is applied, the steering angle will be negated.
     """
+
     head = bernoulli.rvs(flipping_prob)
     if head:
         return np.fliplr(img), -1 * steering
@@ -85,3 +88,18 @@ def random_shear(img, steering, shear_range=200):
     img = cv2.warpAffine(img, M, (cols, rows), borderMode=1)
     steering += dsteering
     return img, steering
+
+def random_rotate(img, steering, rotation_amount=15):
+    # will cost too much time
+    angle = np.random.uniform(-rotation_amount, rotation_amount + 1)
+    rad = (np.pi / 180.0) * angle
+    return rotate(img, angle, reshape=False), steering + (-1) * rad
+
+def random_gamma(img):
+    # http://www.pyimagesearch.com/2015/10/05/opencv-gamma-correction/
+    gamma = np.random.uniform(0.4, 1.5)
+    inv_gamma = 1.0 / gamma
+    table = np.array([((i / 255.0) ** inv_gamma) * 255
+                      for i in np.arange(0, 256)]).astype("uint8")
+    img = cv2.LUT(img, table)
+    return(img)
