@@ -30,18 +30,26 @@ import utils
 # model achitecture
 model = Sequential()
 model.add(Lambda(lambda x: (x /255.0) - 0.5, input_shape=(160,320,3)))
-model.add(Cropping2D(cropping=((50, 20),(0, 0))))
+model.add(Cropping2D(cropping=((55, 15),(0, 0))))
 model.add(Lambda(image_resize))
 
-model.add(Conv2D(filters=24, kernel_size=(5,5), strides=(2,2), padding='valid', activation='relu'))
+model.add(Conv2D(filters=24, kernel_size=(5,5), strides=(2,2), padding='same', activation='relu'))
+model.add(MaxPooling2D(pool_size=(2, 2), strides=(1, 1)))
+model.add(Dropout(0.5))
 
-model.add(Conv2D(filters=36, kernel_size=(5,5), strides=(2,2), padding='valid', activation='relu'))
+model.add(Conv2D(filters=36, kernel_size=(5,5), strides=(2,2), padding='same', activation='relu'))
+model.add(MaxPooling2D(pool_size=(2, 2), strides=(1, 1)))
+model.add(Dropout(0.4))
 
-model.add(Conv2D(filters=48, kernel_size=(5,5), strides=(2,2), padding='valid', activation='relu'))
+model.add(Conv2D(filters=48, kernel_size=(5,5), strides=(2,2), padding='same', activation='relu'))
+model.add(MaxPooling2D(pool_size=(2, 2), strides=(1, 1)))
+model.add(Dropout(0.3))
 
-model.add(Conv2D(filters=64, kernel_size=(3,3), strides=(1,1), padding='valid', activation='relu'))
+model.add(Conv2D(filters=64, kernel_size=(3,3), strides=(1,1), padding='same', activation='relu'))
+model.add(MaxPooling2D(pool_size=(2, 2), strides=(1, 1)))
 
-model.add(Conv2D(filters=64, kernel_size=(3,3), strides=(1,1), padding='valid', activation='relu'))
+model.add(Conv2D(filters=64, kernel_size=(3,3), strides=(1,1), padding='same', activation='relu'))
+model.add(MaxPooling2D(pool_size=(2, 2), strides=(1, 1)))
 
 
 model.add(Flatten())

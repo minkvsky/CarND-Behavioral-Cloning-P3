@@ -6,7 +6,7 @@ from scipy.ndimage import rotate
 from scipy.stats import bernoulli
 
 DATA_PATH = 'data'
-def image_resize(image, dim = (66, 200)):
+def image_resize(image, dim = (64, 64)):
     # resize image for using in cnn
     # use like this or you will get error when you load model
     import tensorflow as tf
