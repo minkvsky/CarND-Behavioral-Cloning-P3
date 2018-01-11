@@ -3,6 +3,7 @@ import numpy as np
 import os
 import cv2
 import matplotlib.pyplot as plt
+from scipy.stats import bernoulli
 
 DATA_PATH = 'data'
 def image_resize(image, dim = (66, 200)):
@@ -54,8 +55,33 @@ def image_random_read(batch_df, i):
         img_path = batch_df.iloc[i]['right'].strip()
         steering = batch_df.iloc[i]['steering'] - STEERING_COEFFICIENT
     img = cv2.imread(DATA_PATH + '/' + img_path)
-    return((img, steering))
+    return img, steering
 
 def image_random_process(img, steering):
     # random fliplr, sheer, gamma
-    return(img, steering)
+    img, steering = random_fliplr(img, steering)
+    img, steering = random_shear(img, steering)
+    return img, steering
+
+def random_fliplr(img, steering, flipping_prob=0.5):
+    """
+    Based on the outcome of an coin flip, the image will be flipped.
+    If flipping is applied, the steering angle will be negated.
+    """
+    head = bernoulli.rvs(flipping_prob)
+    if head:
+        return np.fliplr(img), -1 * steering
+    else:
+        return img, steering
+
+def random_shear(img, steering, shear_range=200):
+    rows, cols, ch = img.shape
+    dx = np.random.randint(-shear_range, shear_range + 1)
+    random_point = [cols / 2 + dx, rows / 2]
+    pts1 = np.float32([[0, rows], [cols, rows], [cols / 2, rows / 2]])
+    pts2 = np.float32([[0, rows], [cols, rows], random_point])
+    dsteering = dx / (rows / 2) * 360 / (2 * np.pi * 25.0) / 6.0
+    M = cv2.getAffineTransform(pts1, pts2)
+    img = cv2.warpAffine(img, M, (cols, rows), borderMode=1)
+    steering += dsteering
+    return img, steering
