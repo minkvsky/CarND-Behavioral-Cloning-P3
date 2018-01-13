@@ -7,13 +7,13 @@ from sklearn.model_selection import train_test_split
 from sklearn.utils import shuffle
 import math
 
-# data
+# data prepare and split
 DATA_PATH = 'data'
 df = pd.read_csv(os.path.join(DATA_PATH, 'driving_log.csv'))
-train_df, valid_df = train_test_split(df, test_size=0.2)
+train_df, valid_df = train_test_split(df, test_size=0.1)
 
 # constants
-number_of_epochs = 8
+number_of_epochs = 5
 batch_size = 64
 steps_per_epoch = math.ceil(len(train_df) * 3 / batch_size)
 validation_steps = math.ceil(len(valid_df) * 3 / batch_size)
@@ -35,22 +35,22 @@ model.add(Lambda(image_resize))
 
 model.add(Conv2D(filters=24, kernel_size=(5,5), strides=(2,2), padding='same', activation='relu'))
 model.add(MaxPooling2D(pool_size=(2, 2), strides=(1, 1)))
-model.add(Dropout(0.5))
+model.add(Dropout(0.3))
+
 
 model.add(Conv2D(filters=36, kernel_size=(5,5), strides=(2,2), padding='same', activation='relu'))
 model.add(MaxPooling2D(pool_size=(2, 2), strides=(1, 1)))
-model.add(Dropout(0.4))
+model.add(Dropout(0.2))
 
 model.add(Conv2D(filters=48, kernel_size=(5,5), strides=(2,2), padding='same', activation='relu'))
 model.add(MaxPooling2D(pool_size=(2, 2), strides=(1, 1)))
-model.add(Dropout(0.3))
+model.add(Dropout(0.1))
 
 model.add(Conv2D(filters=64, kernel_size=(3,3), strides=(1,1), padding='same', activation='relu'))
 model.add(MaxPooling2D(pool_size=(2, 2), strides=(1, 1)))
 
 model.add(Conv2D(filters=64, kernel_size=(3,3), strides=(1,1), padding='same', activation='relu'))
 model.add(MaxPooling2D(pool_size=(2, 2), strides=(1, 1)))
-
 
 model.add(Flatten())
 model.add(Dense(1164, activation='relu'))
@@ -72,7 +72,7 @@ with open('tuning_param/model_summary_{}.md'.format(model_ver), 'w') as f:
 train_gen = utils.generate_batch(train_df)
 valid_gen = utils.generate_batch(valid_df)
 
-# training
+# training and validation
 checkpointer = ModelCheckpoint(filepath='model.h5',
                                verbose=1, save_best_only=True)
 hist = model.fit_generator(train_gen,
@@ -88,11 +88,11 @@ with open('tuning_param/model_hist.p', 'wb') as f:
     pickle.dump(hist.history, f)
 end = time.time()
 print('time consume:{} min'.format((end - start)/60))
-
+# tunning_records
 print('model ver:{}'.format(model_ver))
 with open('tunning_records.md', 'a') as f:
     f.write('# {}\n'.format(model_ver))
     f.write('- val_loss: {}\n'.format(hist.history['val_loss'][-1]))
-    f.write('- time consume:{} min {} epoches'.format((end - start)/60, number_of_epochs))
+    f.write('- time consume:{} min {} epoches\n'.format((end - start)/60, number_of_epochs))
 # Visualize the training and validation loss of your neural network
 loss_plot(hist, model_ver)

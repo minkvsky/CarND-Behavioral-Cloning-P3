@@ -41,6 +41,9 @@ The goals / steps of this project are the following:
 This lab requires:
 
 * [CarND Term1 Starter Kit](https://github.com/udacity/CarND-Term1-Starter-Kit)
+where I update tensorflow and keras
+- tensorflow-gpu==1.2
+- keras==2.1.2
 
 The lab enviroment can be created with CarND Term1 Starter Kit. Click [here](https://github.com/udacity/CarND-Term1-Starter-Kit/blob/master/README.md) for the details.
 
