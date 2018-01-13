@@ -41,20 +41,55 @@ def generate_batch(df, batch_size=64):
             y_train = np.array(steerings)
             yield shuffle(X_train, y_train)
 
+# def image_random_read(batch_df, i):
+#     # random select one of center, left, right
+#     STEERING_COEFFICIENT = 0.23
+#     rnd_image = np.random.randint(0, 3)
+#     if rnd_image == 0:
+#         img_path = batch_df.iloc[i]['left'].strip()
+#         steering = batch_df.iloc[i]['steering'] + STEERING_COEFFICIENT
+#         if steering > 1:
+#             img_path = batch_df.iloc[i]['center'].strip()
+#             steering = batch_df.iloc[i]['steering']
+#     elif rnd_image == 1:
+#         img_path = batch_df.iloc[i]['center'].strip()
+#         steering = batch_df.iloc[i]['steering']
+#         # for balance data
+#         if abs(steering) < 0.2 and np.random.randint(0, 100) > 20:
+#             if np.random.randint(0, 2) == 0:
+#                 img_path = batch_df.iloc[i]['left'].strip()
+#                 steering = batch_df.iloc[i]['steering'] + STEERING_COEFFICIENT
+#             else:
+#                 img_path = batch_df.iloc[i]['right'].strip()
+#                 steering = batch_df.iloc[i]['steering'] - STEERING_COEFFICIENT
+#     else:
+#         img_path = batch_df.iloc[i]['right'].strip()
+#         steering = batch_df.iloc[i]['steering'] - STEERING_COEFFICIENT
+#         if steering < -1:
+#             img_path = batch_df.iloc[i]['center'].strip()
+#             steering = batch_df.iloc[i]['steering']
+#     img = cv2.imread(DATA_PATH + '/' + img_path)
+#     return img, steering
+
 def image_random_read(batch_df, i):
     # random select one of center, left, right
-    STEERING_COEFFICIENT = 0.2
+    STEERING_COEFFICIENT = 0.23
     rnd_image = np.random.randint(0, 3)
     if rnd_image == 0:
         img_path = batch_df.iloc[i]['left'].strip()
         steering = batch_df.iloc[i]['steering'] + STEERING_COEFFICIENT
+
     elif rnd_image == 1:
         img_path = batch_df.iloc[i]['center'].strip()
         steering = batch_df.iloc[i]['steering']
+
     else:
         img_path = batch_df.iloc[i]['right'].strip()
         steering = batch_df.iloc[i]['steering'] - STEERING_COEFFICIENT
+
     img = cv2.imread(DATA_PATH + '/' + img_path)
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB) # necessary for cv2.imread
+    # no use for plt.imread
     return img, steering
 
 def image_random_process(img, steering):
